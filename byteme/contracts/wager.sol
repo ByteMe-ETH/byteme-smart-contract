@@ -9,6 +9,7 @@ contract Wager is PriceConverter {
      
     address public winner;
     uint public minimumBetAmount=getConversion(260000000000000);
+    uint gameCounter;
 
 
   
@@ -20,22 +21,38 @@ contract Wager is PriceConverter {
         uint gameID;
     }
 
+    struct Game{
+        address player1;
+        address player2;
+        uint256 gameID;
+    }
 
     mapping(address=>Bet) public bets;
     mapping(address=>uint) public balances;
     mapping(uint=>address) public results;
+    Game[] games;
+    
 
     event betMade(address betMaker, Bet  bet);
     event paybackFinished(address _winner,uint gain);
-    function makeBet(uint amount,address guess,uint _gameID) external{
+    
+    
+    
+    
+    
+    function makeBet(uint amount,address opponent,address guess) external returns(uint){
         require(amount>=minimumBetAmount,"Your bet is under the cap! ");
+        Game memory game= Game(msg.sender,opponent,gameCounter);
+        gameCounter++;
+        games.push(game);
         bool _isTrue;
         if(winner==guess){
             _isTrue=true;
         }
-        bets[msg.sender]=Bet(msg.sender,guess,amount,_isTrue,_gameID);
+        bets[msg.sender]=Bet(msg.sender,guess,amount,_isTrue,gameCounter);
         balances[msg.sender]+=amount;
         emit betMade(msg.sender,bets[msg.sender]);
+        return game.gameID;
     }
 
     function payback() external{
@@ -47,7 +64,8 @@ contract Wager is PriceConverter {
 
     }
 
-    fallback() external {
-
+    receive() external payable{}
+    fallback() external payable {
+        revert();
     }
 }
