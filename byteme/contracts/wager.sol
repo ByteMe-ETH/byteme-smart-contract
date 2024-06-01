@@ -24,6 +24,7 @@ contract Wager is PriceConverter {
     }
 
     function makeBet(uint amount,address guess) internal{
+        require(amount>=minimumBetAmount,"Your bet is under the cap! ");
         bool _isTrue;
         if(winner==guess){
             _isTrue=true;
