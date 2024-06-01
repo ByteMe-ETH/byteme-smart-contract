@@ -16,21 +16,23 @@ contract Wager is PriceConverter {
         address _winner;
         uint256 amount;
         bool isTrue;
+        uint gameID;
     }
     mapping(address=>Bet) public bets;
     mapping(address=>uint) public balances;
-    constructor(address _winner) {
-        winner=_winner;
-    }
+    mapping(uint=>address) public results;
 
-    function makeBet(uint amount,address guess) internal{
+    event betMade(address betMaker, Bet  bet);
+    event paybackFinished(address _winner,uint gain);
+    function makeBet(uint amount,address guess,uint _gameID) internal{
         require(amount>=minimumBetAmount,"Your bet is under the cap! ");
         bool _isTrue;
         if(winner==guess){
             _isTrue=true;
         }
-        bets[msg.sender]=Bet(msg.sender,guess,amount,_isTrue);
+        bets[msg.sender]=Bet(msg.sender,guess,amount,_isTrue,_gameID);
         balances[msg.sender]+=amount;
+        emit betMade(msg.sender,bets[msg.sender]);
     }
 
     function payback() external{
@@ -38,6 +40,7 @@ contract Wager is PriceConverter {
         uint gain= 2*(getConversion(bets[msg.sender].amount));
         balances[msg.sender]=gain;
         payable(msg.sender).transfer(gain);
+        emit paybackFinished(msg.sender,gain);
 
     }
 
