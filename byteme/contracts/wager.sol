@@ -10,6 +10,7 @@ contract Wager is PriceConverter {
     address public winner;
     uint public minimumBetAmount=getConversion(260000000000000);
 
+
   
     struct Bet{
         address _owner;
@@ -18,13 +19,15 @@ contract Wager is PriceConverter {
         bool isTrue;
         uint gameID;
     }
+
+
     mapping(address=>Bet) public bets;
     mapping(address=>uint) public balances;
     mapping(uint=>address) public results;
 
     event betMade(address betMaker, Bet  bet);
     event paybackFinished(address _winner,uint gain);
-    function makeBet(uint amount,address guess,uint _gameID) internal{
+    function makeBet(uint amount,address guess,uint _gameID) external{
         require(amount>=minimumBetAmount,"Your bet is under the cap! ");
         bool _isTrue;
         if(winner==guess){
