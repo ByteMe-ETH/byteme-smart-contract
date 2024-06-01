@@ -35,8 +35,8 @@ contract Wager is PriceConverter {
 
     function payback() external{
         require(bets[msg.sender].isTrue,"It was NOT a successful bet !");
-        uint gain= getConversion(bets[msg.sender].amount);
-        balances[msg.sender];
+        uint gain= 2*(getConversion(bets[msg.sender].amount));
+        balances[msg.sender]=gain;
         payable(msg.sender).transfer(gain);
 
     }
